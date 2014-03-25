@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    
+        android:id="@+id/scrolllayoutresults" 
+        
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="380dp"
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop ="true"
+        android:padding="10dp" 
+        android:background="@drawable/linearlayout_bg"
+        android:visibility="gone">
+        
+   <TableLayout
+
+    android:id="@+id/tableLayoutforAnalysisResults"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:shrinkColumns="*">
+
+   </TableLayout>
+
+   
+</ScrollView>
+
