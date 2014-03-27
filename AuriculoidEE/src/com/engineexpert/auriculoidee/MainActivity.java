@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 
-				actionShownText.setText("Capturing the Engine Sound");
+				//actionShownText.setText("Capturing the Engine Sound");
 				AWRTHREGPP.beginRecording();
 			}
 		});
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				
-				actionShownText.setText("Recording Stoppped by the User");
+				//actionShownText.setText("Recording Stoppped by the User");
 				AWRTHREGPP.endRecording();
 			}
 		});

@@ -67,7 +67,7 @@ public class AudioWaveRecorder extends Activity{
 	  public void endRecording() {
 		  
 	
-		  strattimetocreatewavfile=System.nanoTime();
+		  strattimetocreatewavfile=System.currentTimeMillis();
 		  isListening = false;
 		    Thread thread = new Thread() {
 		      @Override
@@ -89,7 +89,7 @@ public class AudioWaveRecorder extends Activity{
 		      }
 		    };
 		    thread.start();
-		    estimatedtimecreatewavfile=System.nanoTime();
+		    estimatedtimecreatewavfile=System.currentTimeMillis();
 			  System.out.println("Time Elapsed to create media file is " + (estimatedtimecreatewavfile-strattimetocreatewavfile)+" nanoSeconds");
 
 		
