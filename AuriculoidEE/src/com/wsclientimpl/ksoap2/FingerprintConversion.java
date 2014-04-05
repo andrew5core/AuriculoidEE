@@ -37,16 +37,22 @@ byte[] bytes;
 		fingerprintManager.saveFingerprintAsFile(fingerprint, Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
 		
 		// load fingerprint from file
-		byte[] loadedFp=fingerprintManager.getFingerprintFromFile(Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
+		bytes=fingerprintManager.getFingerprintFromFile(Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
+		File fileToBeString = new File(Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
 		
+		if(bytes==null){
+			
+			System.out.println("file is null Error");
+		}
 		
 		// fingerprint bytes checking
 		for (int i=0; i<fingerprint.length; i++){
-			System.out.println(fingerprint[i]+" vs "+loadedFp[i]);
+			System.out.println(fingerprint[i]+" vs "+bytes[i]);
 		}
 		
 		try {
-			bytes = FileUtils.readFileToByteArray(userFile);
+			
+			bytes = FileUtils.readFileToByteArray(fileToBeString);
 			encoded = Base64.encodeToString(bytes, 0);
 
 	

@@ -19,14 +19,20 @@ public class AndroidWSClient extends Activity{
 	
 	
 	 private static final String NAMESPACE = "http://mediaanalyzepackage.com";
-	 private static String URL = "http://192.168.56.1:8085/AuriculoidAtToyotaServicesSriLanka/services/GetMediaFile?wsdl"; 
+	 private static String URL = "http://192.168.56.1:8085/AuriculoidAtToyotaServicesSriLanka/services/GetGenuinityResuts?wsdl"; 
 	 private static final String METHOD_NAME = "getMediaFileConfirmation";
 	 private static final String SOAP_ACTION =  "http://mediaanalyzepackage/getMediaFileConfirmation";
 	 private SoapPrimitive  resultsRequestSOAP;
-	 private String TransportationFIle;
 	 
-	 long strattimetocreatewavfile;
-	  long	lattimebyendofResponce;
+	 private String TransportationFIle;
+	 private String vehicleName;
+	 private String vehicleManuYear;
+	 private String Method;
+
+
+
+	long strattimetocreatewavfile;
+	 long	lattimebyendofResponce;
 	 
 	 public String wsResponceOnTheScreen () throws RemoteException{
 		
@@ -39,14 +45,21 @@ public class AndroidWSClient extends Activity{
 		  propInfo.name="arg0";
 		  propInfo.type=PropertyInfo.OBJECT_CLASS;
 		  
-		  request.addProperty(propInfo,gettranspotationFile());  
+	
+		  //request.addProperty(propInfo,getMethod());
+		  request.addProperty(propInfo,getVehicleName());
+		  request.addProperty(propInfo,getVehicleManuYear());
+		  //request.addProperty(propInfo,gettranspotationFile());
 
 		  SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11); 
 
 		 envelope.setOutputSoapObject(request);
+		 
+		 
 		 HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
 
 		  try {
+			  
 		   androidHttpTransport.call(SOAP_ACTION, envelope);
 		  
 		   resultsRequestSOAP = (SoapPrimitive) envelope.getResponse();
@@ -64,8 +77,6 @@ public class AndroidWSClient extends Activity{
 			
 		return resultsRequestSOAP.toString();
 		
-
-	
 
 		
 	}
@@ -89,5 +100,35 @@ public class AndroidWSClient extends Activity{
 		return TransportationFIle;
 		
 	}
+	
+	 public String getVehicleName() {
+		return vehicleName;
+	}
+
+
+	public void setVehicleName(String vehicleName) {
+		this.vehicleName = vehicleName;
+	}
+
+
+	public String getVehicleManuYear() {
+		return vehicleManuYear;
+	}
+
+
+	public void setVehicleManuYear(String vehicleManuYear) {
+		this.vehicleManuYear = vehicleManuYear;
+	}
+
+
+	 public String getMethod() {
+		return Method;
+	}
+
+
+	public void setMethod(String method) {
+		Method = method;
+	}
+	
 
 }

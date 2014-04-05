@@ -626,13 +626,18 @@ public class MainActivity extends Activity {
             	
             	FingerprintConversion FPV=new FingerprintConversion();
             	String fileexsits=FPV.FingerprintConversionOnline();
-            	System.out.println(fileexsits);
+ 
             	
   				try {
   					
   					AndroidWSClient AWSC=new AndroidWSClient();
+  					AWSC.setMethod("SoundMatch");
+  					AWSC.setVehicleName("Allion 1.6");
+  					AWSC.setVehicleManuYear("2010-2012");
+  					AWSC.settranspotationFile(fileexsits);
   					
-  					
+  					String responce=AWSC.wsResponceOnTheScreen();
+  					System.out.println("Your Responce " + responce);
   					
   				}
   				 catch (RemoteException e) {
