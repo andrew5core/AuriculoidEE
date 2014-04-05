@@ -52,9 +52,8 @@ public class AudioWaveRecorder extends Activity{
 	  private Spinner spinner;
 	  private View startedRecording;
 	  private TextView startedRecordingTime;
-	  long strattimetocreatewavfile;
-	  long	estimatedtimecreatewavfile;
 
+	  
 	  private AlertDialog dialog;
 
 	  private File outFile;
@@ -62,13 +61,15 @@ public class AudioWaveRecorder extends Activity{
 	  private boolean isListening;
 	
 	  public int sampleRate = 8000;
-	
+	  
+	  private AudioRecord recordInstance;
 	
 	  public void endRecording() {
 		  
 	
-		  strattimetocreatewavfile=System.currentTimeMillis();
+
 		  isListening = false;
+		  
 		    Thread thread = new Thread() {
 		      @Override
 		      public void run() {
@@ -89,12 +90,10 @@ public class AudioWaveRecorder extends Activity{
 		      }
 		    };
 		    thread.start();
-		    estimatedtimecreatewavfile=System.currentTimeMillis();
-			  System.out.println("Time Elapsed to create media file is " + (estimatedtimecreatewavfile-strattimetocreatewavfile)+" nanoSeconds");
 
-		
-	  
-
+	
+			  recordInstance.stop();  
+			 
 	  }
 
 	  
@@ -191,10 +190,10 @@ public class AudioWaveRecorder extends Activity{
 	  public void onDestroy() {
 	    super.onDestroy();
 	    isListening = false;
+	   
 	  }
 
 	  public void startRecording() {
-	    sampleRate=8000;
 	    isListening = true;
 	    //editText.setEnabled(false);
 	    //newTimestamp.setEnabled(false);
@@ -206,22 +205,7 @@ public class AudioWaveRecorder extends Activity{
 	    //startedRecordingTime.setText(dateFormat.format(new Date()));
 	    //startedRecording.setVisibility(View.VISIBLE);
 	    
-   	 new CountDownTimer(10000, 1000) {
-		 
-
-	     public void onTick(long millisUntilFinished) {
-	         //mTextField.setText("seconds remaining: " + millisUntilFinished / 1000);
-	         
-	     
-	     	System.out.println("Seconds remaining: " + millisUntilFinished / 1000);
-	     }
-
-	     public void onFinish() {
-	         //mTextField.setText("done!");
-	    	 endRecording();
-	     }
-	  }.start();
-	 
+  
 	  }
 
 	   
@@ -253,7 +237,9 @@ public class AudioWaveRecorder extends Activity{
 		        return;
 		      }
 		      int bufferSize = 2 * minBufferSize;
-		      AudioRecord recordInstance =
+		      
+
+		      recordInstance =
 		          new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig, audioEncoding,
 		              bufferSize);
 		      if (recordInstance.getState() != AudioRecord.STATE_INITIALIZED) {
@@ -264,8 +250,12 @@ public class AudioWaveRecorder extends Activity{
 		            //actionButton.performClick();
 		            
 		            System.out.println("Unable to access the audio recording hardware - is your mic working?");
+					
 		          }
 		        });
+		        
+		        recordInstance.release();
+		        recordInstance=null;
 		        return;
 		      }
 

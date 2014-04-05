@@ -7,5 +7,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="lib" path="C:/Users/Non-Administrator/Android_Auriculoid/AuriculoidEE/AuriculoidEE/External_lib_Mag/commons-io-2.4.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Non-Administrator/Android_Auriculoid/AuriculoidEE/AuriculoidEE/External_lib_Mag/ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Non-Administrator/Android_Auriculoid/AuriculoidEE/AuriculoidEE/External_lib_Mag/musicg-1.4.2.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -4,35 +4,43 @@ package com.engineexpert.auriculoidee;
 import com.recordfunction.wavfilecreation.AudioWaveRecorder;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.RemoteException;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
+import com.wsclientimpl.ksoap2.AndroidWSClient;
+import com.wsclientimpl.ksoap2.FingerprintConversion;
+
 public class MainActivity extends Activity {
 
 	ImageButton capture, stop, webCheck;
-	TextView actionShownText, webServiceCheckText;
-
-	AudioWaveRecorder AWRTHREGPP =new AudioWaveRecorder();
-	
-	@Override
+	TextView actionShownText, webServiceCheckText, value;
+	String RecordStatus;
+	AudioWaveRecorder AWRWAV;
+	TableLayout tl;
+	CountDownTimer ct;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		//
 		
-		createTableTimeElpased();
+		createTableTimeElpased(null);
+		//
 		
 		
 		
@@ -47,11 +55,64 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 
-				//actionShownText.setText("Capturing the Engine Sound");
-				AWRTHREGPP.beginRecording();
+				
+				if(RecordStatus!=null){
+					
+					AWRWAV.endRecording();
+					ct.cancel();
+					tl.removeAllViews();
+					createTableTimeElpased(null);
+	
+				}
+				
+				else{
+					
+				AWRWAV=new AudioWaveRecorder();	
+				AWRWAV.beginRecording();
+				RecordStatus="Record Started";
+				tl.removeAllViews();
+				createTableTimeElpased("Recording");
+				
+
+		        	 try {
+		        		int mil=1500;
+		        		
+						Thread.sleep(mil);
+
+					} 
+		        	 catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+
+			 
+		        ct =new CountDownTimer(10000, 1000) { // adjust the milli seconds here
+		            public void onTick(long millisUntilFinished) {
+		            	value.setText("Seconds 0" + millisUntilFinished / 1000);        	
+		            
+		            }
+
+		            public void onFinish() {
+		            	
+		            	value.setText("Ready to Analyze");
+		            	if(RecordStatus!=null){
+		            	AWRWAV.endRecording();
+		            	}
+						RecordStatus=null;
+		            }
+		         }.start();
+
+				}
+				
+				//((ViewManager)entry.getParent()).removeView(entry);
+				//createTableTimeElpased("Recording");
+
 			}
+			
+			
+			
 		});
 		
 		
@@ -62,7 +123,14 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				
 				//actionShownText.setText("Recording Stoppped by the User");
-				AWRTHREGPP.endRecording();
+				  Intent intent = getIntent();
+				  overridePendingTransition(0, 0);
+				  intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				  finish();
+
+				  overridePendingTransition(0, 0);
+				 startActivity(intent);
+
 			}
 		});
 		
@@ -95,7 +163,7 @@ public class MainActivity extends Activity {
 	  					// TODO Auto-generated catch block
 	  					e.printStackTrace();
 
-	  				}
+	  		}
 						
 	}
 			}
@@ -408,7 +476,7 @@ public class MainActivity extends Activity {
 				LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
 		
-		TextView value = new TextView(this);
+		value = new TextView(this);
 		value.setId(21);
 		value.setTextSize(40);
 		value.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -461,9 +529,9 @@ public class MainActivity extends Activity {
 	}
 	
 	
-	public void createTableTimeElpased(){
+	public void createTableTimeElpased(String passedvalue){
 
-		TableLayout tl = (TableLayout) findViewById(R.id.genmatchresults);
+		tl = (TableLayout) findViewById(R.id.genmatchresults);
 		
 		TableRow tr_head = new TableRow(this);
 		
@@ -478,7 +546,13 @@ public class MainActivity extends Activity {
 		Header.setId(20);
 		Header.setTextSize(18);
 		Header.setGravity(Gravity.CENTER_HORIZONTAL);
-		Header.setText("Recording Started");
+		if(passedvalue!= null){
+			
+			Header.setText("Recording Started");
+		}else{
+			Header.setText("Recording Not Initiated");	
+		}
+
 		Header.setTextColor(Color.LTGRAY);
 		Header.setTypeface(null, Typeface.BOLD);
 		Header.setPadding(5, 5, 5, 5);
@@ -497,21 +571,35 @@ public class MainActivity extends Activity {
 				LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
 		
-		TextView value = new TextView(this);
+		value = new TextView(this);
 		value.setId(21);
-		value.setTextSize(40);
+		value.setTextSize(30);
 		value.setGravity(Gravity.CENTER_HORIZONTAL);
-		value.setText("05 Seconds");
 		value.setTextColor(Color.LTGRAY);
 		value.setTypeface(null, Typeface.BOLD);
 		value.setPadding(5, 5, 5, 5);
-		tr_row.addView(value);
 		
+		if(passedvalue!= null){
+			
+		value.setText("Recording Started");
+		tr_row.addView(value);
         tl.addView(tr_row, new TableLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT));
 		
-		
+		}
+		else
+		{
+			
+		value.setText("Press Rec to Start");
+		tr_row.addView(value);
+        tl.addView(tr_row, new TableLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT));
+		}
+
+
+
         TableRow tr_row_button = new TableRow(this);
         
         tr_row_button.setId(12);
@@ -521,6 +609,9 @@ public class MainActivity extends Activity {
 				LayoutParams.MATCH_PARENT,
 				LayoutParams.WRAP_CONTENT));
         
+    	if(passedvalue!= null){
+    		
+    		
         Button btn = new Button(this);
         btn.setText("Analyze Possible Issues");
         btn.setId(22);
@@ -530,17 +621,58 @@ public class MainActivity extends Activity {
             public void onClick(View v){
                
             	System.out.println("Button Pressed");
+            	tl.removeAllViews();
+            	createTableSoundMatch();
+            	
+            	FingerprintConversion FPV=new FingerprintConversion();
+            	String fileexsits=FPV.FingerprintConversionOnline();
+            	System.out.println(fileexsits);
+            	
+  				try {
+  					
+  					AndroidWSClient AWSC=new AndroidWSClient();
+  					
+  					
+  					
+  				}
+  				 catch (RemoteException e) {
+  					// TODO Auto-generated catch block
+  					e.printStackTrace();
+
+  		}
+            	
+            
+            	
             }
         }
     );
         
 
         tr_row_button.addView(btn);
-        
         tl.addView(tr_row_button, new TableLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT));
-        
+    	}
+    	
+    	else{
+    		
+    		TextView Instructions1 = new TextView(this);
+    		Instructions1.setId(21);
+    		Instructions1.setTextSize(12);
+    		Instructions1.setGravity(Gravity.LEFT);
+    		Instructions1.setTextColor(Color.LTGRAY);
+    		Instructions1.setText("1). Pressing Stop will elimenate the Recording. \n2). Refreshing will Roll-Over the Process. \n3). After '05' Seconds you Continue to Analyze");
+    		Instructions1.setTypeface(null, Typeface.NORMAL);
+    		Instructions1.setPadding(5, 5, 5, 5);
+    		tr_row_button.addView(Instructions1);
+            tl.addView(tr_row_button, new TableLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT));
+    		
+
+    		
+    	}
+
         
 
        /* TableRow tr_row_progressbar = new TableRow(this);
@@ -565,6 +697,7 @@ public class MainActivity extends Activity {
 		
         tl.setVisibility(View.VISIBLE);	
 		
+
 
 		
 	}
