@@ -8,8 +8,10 @@ import android.os.CountDownTimer;
 import android.os.RemoteException;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.shapes.Shape;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
@@ -32,17 +34,20 @@ public class MainActivity extends Activity {
 	TextView actionShownText, webServiceCheckText, value;
 	String RecordStatus;
 	AudioWaveRecorder AWRWAV;
+	
 	TableLayout tl;
 	CountDownTimer ct;
+	Shape backgroundCenter;
+	Button buttonSoundMatch;
+	
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
 		createTableTimeElpased(null);
-		//
-		
-		
+
 		
 		capture=(ImageButton) findViewById(R.id.recordButton);
 		stop=(ImageButton) findViewById(R.id.stopButton);
@@ -60,49 +65,20 @@ public class MainActivity extends Activity {
 				if(RecordStatus!=null){
 					
 					AWRWAV.endRecording();
-					ct.cancel();
-					tl.removeAllViews();
-					createTableTimeElpased(null);
-	
+					//ct.cancel();
+					//tl.removeAllViews();
+					//createTableTimeElpased(null);
+					AWRWAV=null;
 				}
 				
 				else{
-					
+				
+	
 				AWRWAV=new AudioWaveRecorder();	
 				AWRWAV.beginRecording();
 				RecordStatus="Record Started";
 				tl.removeAllViews();
 				createTableTimeElpased("Recording");
-				
-
-		        	 try {
-		        		int mil=1500;
-		        		
-						Thread.sleep(mil);
-
-					} 
-		        	 catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-
-			 
-		        ct =new CountDownTimer(10000, 1000) { // adjust the milli seconds here
-		            public void onTick(long millisUntilFinished) {
-		            	value.setText("Seconds 0" + millisUntilFinished / 1000);        	
-		            
-		            }
-
-		            public void onFinish() {
-		            	
-		            	value.setText("Ready to Analyze");
-		            	if(RecordStatus!=null){
-		            	AWRWAV.endRecording();
-		            	}
-						RecordStatus=null;
-		            }
-		         }.start();
 
 				}
 				
@@ -123,6 +99,8 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				
 				//actionShownText.setText("Recording Stoppped by the User");
+				RecordStatus=null;
+				AWRWAV=null;
 				  Intent intent = getIntent();
 				  overridePendingTransition(0, 0);
 				  intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -183,7 +161,7 @@ public class MainActivity extends Activity {
 		
 		
 		
-		TableLayout tl = (TableLayout) findViewById(R.id.tableLayoutforAnalysisResults);
+		tl = (TableLayout) findViewById(R.id.tableLayoutforAnalysisResults);
 		
 		TableRow tr_head = new TableRow(this);
 		
@@ -442,7 +420,7 @@ public class MainActivity extends Activity {
 	
 	public void createTableSoundMatch(){
 
-		TableLayout tl = (TableLayout) findViewById(R.id.genmatchresults);
+		tl = (TableLayout) findViewById(R.id.genmatchresults);
 		
 		TableRow tr_head = new TableRow(this);
 		
@@ -509,6 +487,11 @@ public class MainActivity extends Activity {
             public void onClick(View v){
                
             	System.out.println("Button Pressed");
+            	tl.setVisibility(View.INVISIBLE);
+            	
+            	createTableSoundAnalysis();
+            	
+            	
             }
         }
     );
@@ -612,12 +595,12 @@ public class MainActivity extends Activity {
     	if(passedvalue!= null){
     		
     		
-        Button btn = new Button(this);
-        btn.setText("Analyze Possible Issues");
-        btn.setId(22);
+    	buttonSoundMatch= new Button(this);
+    	buttonSoundMatch.setText("Analyze Possible Issues");
+    	buttonSoundMatch.setId(22);
         
         
-        btn.setOnClickListener(new View.OnClickListener(){
+    	buttonSoundMatch.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                
             	System.out.println("Button Pressed");
@@ -638,7 +621,8 @@ public class MainActivity extends Activity {
   					
   					String responce=AWSC.wsResponceOnTheScreen();
   					System.out.println("Your Responce " + responce);
-  					
+  					value.setText(responce);
+  					RecordStatus=null;
   				}
   				 catch (RemoteException e) {
   					// TODO Auto-generated catch block
@@ -653,7 +637,8 @@ public class MainActivity extends Activity {
     );
         
 
-        tr_row_button.addView(btn);
+        tr_row_button.addView(buttonSoundMatch);
+        tl.setVisibility(View.INVISIBLE);	
         tl.addView(tr_row_button, new TableLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT));

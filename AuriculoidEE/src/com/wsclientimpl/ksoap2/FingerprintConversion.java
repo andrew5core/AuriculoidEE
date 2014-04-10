@@ -34,6 +34,15 @@ byte[] bytes;
 
 		// dump the fingerprint
 		FingerprintManager fingerprintManager=new FingerprintManager();
+		
+		File fileDeletePrevious = new File(Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
+		
+		if(fileDeletePrevious.exists()){
+			
+			
+			fileDeletePrevious.delete();
+		}
+		
 		fingerprintManager.saveFingerprintAsFile(fingerprint, Environment.getExternalStorageDirectory() + "/" +"record_temp"+".fingerprint");
 		
 		// load fingerprint from file

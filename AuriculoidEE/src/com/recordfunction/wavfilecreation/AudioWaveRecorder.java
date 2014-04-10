@@ -48,11 +48,12 @@ public class AudioWaveRecorder extends Activity{
 	  private ImageButton newTimestamp;
 	  private EditText editText;
 	  private String filename;
+	  String filenamefingerprint;
 	  private ProgressBar saving;
 	  private Spinner spinner;
 	  private View startedRecording;
 	  private TextView startedRecordingTime;
-
+	  private AudioRecord recordInstance;
 	  
 	  private AlertDialog dialog;
 
@@ -60,41 +61,32 @@ public class AudioWaveRecorder extends Activity{
 
 	  private boolean isListening;
 	
-	  public int sampleRate = 8000;
-	  
-	  private AudioRecord recordInstance;
-	
-	  public void endRecording() {
-		  
+	  public int sampleRate = 44100;
 	
 
-		  isListening = false;
+	
+	  
+	  public void endRecording() {
 		  
+		    isListening = false;
 		    Thread thread = new Thread() {
 		      @Override
 		      public void run() {
 
-
 		        if (outFile != null) {
 		          appendHeader(outFile);
-
-		          //Intent scanWav = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-		          //scanWav.setData(Uri.fromFile(outFile));
-		          //sendBroadcast(scanWav);
-		          System.out.println("Recording Succes 2");
+		  
 		          outFile = null;
-		          //notificationManager.cancel(NOTICE_RECORD);
+		          
 		        }
-
-
 		      }
 		    };
 		    thread.start();
-
-	
-			  recordInstance.stop();  
-			 
-	  }
+		    
+		   
+	}
+		      
+	  
 
 	  
 	  private class SpaceCheck implements Runnable {
@@ -109,9 +101,9 @@ public class AudioWaveRecorder extends Activity{
 		          runOnUiThread(new Runnable() {
 		            @Override
 		            public void run() {
-		              //showDialog("Low on disk space", "There isn't enough space " + "left on your SD card (" + freeBytes
-		              //    + "b) , but what you've " + "recorded up to now has been saved.");
-		              //actionButton.performClick();
+		              showDialog("Low on disk space", "There isn't enough space " + "left on your SD card (" + freeBytes
+		                 + "b) , but what you've " + "recorded up to now has been saved.");
+		              actionButton.performClick();
 		            	
 		            	System.out.println("No enough memo in ur card");
 		            }
@@ -121,6 +113,7 @@ public class AudioWaveRecorder extends Activity{
 
 		        try {
 		          Thread.sleep(3000);
+		          
 		        } catch (InterruptedException e) {
 		        }
 		      }
@@ -137,51 +130,24 @@ public class AudioWaveRecorder extends Activity{
 		    
 		    Log.d("FS State", state);
 		    if (state.equals(Environment.MEDIA_SHARED)) {
-		      //showDialog("Unmount USB storage", "Please unmount USB storage before starting to record.");
+		      showDialog("Unmount USB storage", "Please unmount USB storage before starting to record.");
 		    System.out.println("USB is connected plaese remove");
             	System.out.println("Please unmount USB storage before starting to record.");
 		      return;
 		    } else if (state.equals(Environment.MEDIA_REMOVED)) {
-		      //showDialog("Insert SD Card", "Please insert an SD card. You need something to record onto.");
+		      showDialog("Insert SD Card", "Please insert an SD card. You need something to record onto.");
 		  	System.out.println("Please insert an SD card. You need something to record onto.");
 		      return;
 		    }
 
 		    // check that the user's supplied a file name
 		    filename= "record_temp.wav";
-		    
+		    filenamefingerprint = "record_temp.fingerprint";
 
-		    File userFile = new File(Environment.getExternalStorageDirectory() + "/" + filename);
-		    if (userFile.exists()) {
-		    	
-		    	userFile.delete();
+
+		  
 		    	startRecording();	
-		    	
-		      /*AlertDialog.Builder builder = new AlertDialog.Builder(Hertz.this);
-		      builder.setTitle("File already exists").setMessage(
-		          "Do you want to overwrite the existing " + "file with that name?").setCancelable(false)
-		          .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		            @Override
-		            public void onClick(DialogInterface dialogInterface, int id) {
-		              dialogInterface.dismiss();
-		              startRecording();
-		            }
-		          }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		            @Override
-		            public void onClick(DialogInterface dialogInterface, int id) {
-		              dialogInterface.cancel();
-		            
-		          });
-		      AlertDialog alert = builder.create();
-		      alert.show();*/
-		    }
-		    
-		    else{
-		    	
-		    	startRecording();
 
-		    		
-		    }
 		    
 		  }
 	  
@@ -191,19 +157,17 @@ public class AudioWaveRecorder extends Activity{
 	    super.onDestroy();
 	    isListening = false;
 	   
+	   
 	  }
 
 	  public void startRecording() {
-	    isListening = true;
-	    //editText.setEnabled(false);
-	    //newTimestamp.setEnabled(false);
-	    //actionButton.setText("Stop recording");
-	    Thread s = new Thread(new SpaceCheck());
-	    s.start();
-	    Thread t = new Thread(new Capture());
-	    t.start();
-	    //startedRecordingTime.setText(dateFormat.format(new Date()));
-	    //startedRecording.setVisibility(View.VISIBLE);
+		  
+
+		    isListening = true;
+		    Thread s = new Thread(new SpaceCheck());
+		    s.start();
+		    Thread t = new Thread(new Capture());
+		    t.start();
 	    
   
 	  }
@@ -214,12 +178,10 @@ public class AudioWaveRecorder extends Activity{
 		    private final int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
 		    private final int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
 
-		    // the actual output format is big-endian, signed
-
 		    @Override
 		    public void run() {
 		      // We're important...
-		      android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+		     android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
 		      // Allocate Recorder and Start Recording...
 		      int minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding);
@@ -227,11 +189,11 @@ public class AudioWaveRecorder extends Activity{
 		        runOnUiThread(new Runnable() {
 		          @Override
 		          public void run() {
-		            //showDialog("Error recording audio", "Your audio hardware doesn't support the sampling rate you have specified." +
-		              //"Try a lower sampling rate, if that doesn't work your audio hardware might be broken.");
+		            showDialog("Error recording audio", "Your audio hardware doesn't support the sampling rate you have specified." +
+		              "Try a lower sampling rate, if that doesn't work your audio hardware might be broken.");
 		            
 		            System.out.println("Error recording audio Your audio hardware doesn't support the sampling rate you have specified.");
-		            //actionButton.performClick();
+		            actionButton.performClick();
 		          }
 		        });
 		        return;
@@ -239,23 +201,24 @@ public class AudioWaveRecorder extends Activity{
 		      int bufferSize = 2 * minBufferSize;
 		      
 
-		      recordInstance =
+		      
+		       recordInstance =
 		          new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig, audioEncoding,
 		              bufferSize);
+		      
 		      if (recordInstance.getState() != AudioRecord.STATE_INITIALIZED) {
 		        runOnUiThread(new Runnable() {
 		          @Override
 		          public void run() {
-		            //showDialog("Error recording audio", "Unable to access the audio recording hardware - is your mic working?");
-		            //actionButton.performClick();
+		            showDialog("Error recording audio", "Unable to access the audio recording hardware - is your mic working?");
+		            actionButton.performClick();
 		            
 		            System.out.println("Unable to access the audio recording hardware - is your mic working?");
 					
 		          }
 		        });
 		        
-		        recordInstance.release();
-		        recordInstance=null;
+
 		        return;
 		      }
 
@@ -265,6 +228,8 @@ public class AudioWaveRecorder extends Activity{
 		      outFile = new File(sdDirectory + "/" + filename);
 		      if (outFile.exists())
 		        outFile.delete();
+		  
+		      
 
 		      FileOutputStream outStream = null;
 		      try {
@@ -275,8 +240,8 @@ public class AudioWaveRecorder extends Activity{
 		        runOnUiThread(new Runnable() {
 		          @Override
 		          public void run() {
-		           // showDialog("Error creating file", "The WAV file you specified "
-		               // + "couldn't be created. Try again with a " + "different filename.");
+		            showDialog("Error creating file", "The WAV file you specified "
+		                + "couldn't be created. Try again with a " + "different filename.");
 		            outFile = null;
 		            System.out.println("Error Creating the wave file you specified");
 		            //actionButton.performClick();
@@ -298,9 +263,9 @@ public class AudioWaveRecorder extends Activity{
 
 		          @Override
 		          public void run() {
-		            //showDialog("IO Exception", "An exception occured when writing to disk or reading from the microphone\n"
-		                    //+ e.getLocalizedMessage()
-		                    //+ "\nWhat you have recorded so far should be saved to disk.");
+		            showDialog("IO Exception", "An exception occured when writing to disk or reading from the microphone\n"
+		                    + e.getLocalizedMessage()
+		                    + "\nWhat you have recorded so far should be saved to disk.");
 		            //actionButton.performClick();
 		            System.out.println("An exception occured when writing to disk or reading from the microphone\n");
 		            
@@ -311,9 +276,9 @@ public class AudioWaveRecorder extends Activity{
 		        runOnUiThread(new Runnable() {
 		          @Override
 		          public void run() {
-		            //showDialog("Out of memory", "The system has been " + "too strong for too long - but what you "
-		             //   + "recorded up to now has been saved.");
-		            //System.gc();
+		            showDialog("Out of memory", "The system has been " + "too strong for too long - but what you "
+		                + "recorded up to now has been saved.");
+		            System.gc();
 		            //actionButton.performClick();
 		            
 		            System.out.println("The system has been " + "too strong for too long - but what you ");
@@ -324,10 +289,14 @@ public class AudioWaveRecorder extends Activity{
 		      // we're done recording
 		      Log.d("Capture", "Stopping recording");
 		      recordInstance.stop();
+		      
 		      try {
 		        outStream.close();
+		        
 		      } catch (Exception e) {
 		        e.printStackTrace();
+		       System.out.println("Exception from the OutputstreaClose"); 
+		        
 		      }
 		    }
 		  }
@@ -349,10 +318,10 @@ public class AudioWaveRecorder extends Activity{
 			      ramFile.write(header);
 			      ramFile.close();
 			    } catch (FileNotFoundException e) {
-			      Log.e("Hertz", "Tried to append header to invalid file: " + e.getLocalizedMessage());
+			      Log.e("Auriculoid", "Tried to append header to invalid file: " + e.getLocalizedMessage());
 			      return;
 			    } catch (IOException e) {
-			      Log.e("Hertz", "IO Error during header append: " + e.getLocalizedMessage());
+			      Log.e("Auriculoid", "IO Error during header append: " + e.getLocalizedMessage());
 			      return;
 			    }
 
@@ -401,11 +370,6 @@ public class AudioWaveRecorder extends Activity{
 		  }
 			
 	
-	
-	
-	
-	
-	
-	
+
 
 }

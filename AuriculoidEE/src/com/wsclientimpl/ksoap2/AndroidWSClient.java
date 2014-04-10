@@ -18,10 +18,10 @@ import android.os.RemoteException;
 public class AndroidWSClient extends Activity{
 	
 	
-	 private static final String NAMESPACE = "http://mediaanalyzepackage.com";
-	 private static String URL = "http://192.168.56.1:8085/AuriculoidAtToyotaServicesSriLanka/services/GetGenuinityResuts?wsdl"; 
-	 private static final String METHOD_NAME = "getMediaFileConfirmation";
-	 private static final String SOAP_ACTION =  "http://mediaanalyzepackage/getMediaFileConfirmation";
+	 private static final String NAMESPACE = "http://methods.enginetuneanalysis.com";
+	 private static String URL = "http://192.168.43.200:8085/ToyotaLankaWebServices/services/GetGenuinityPercentage?wsdl"; 
+	 private static final String METHOD_NAME = "getSoundSimPercentage";
+	 private static final String SOAP_ACTION =  "http://methods.enginetuneanalysis/getSoundSimPercentage";
 	 private SoapPrimitive  resultsRequestSOAP;
 	 
 	 private String TransportationFIle;
@@ -41,17 +41,25 @@ public class AndroidWSClient extends Activity{
 		SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME); 
 
 		  
-		  PropertyInfo propInfo=new PropertyInfo();
-		  propInfo.name="arg0";
-		  propInfo.type=PropertyInfo.OBJECT_CLASS;
-		  
-	
-		  //request.addProperty(propInfo,getMethod());
-		  request.addProperty(propInfo,getVehicleName());
-		  request.addProperty(propInfo,getVehicleManuYear());
-		  //request.addProperty(propInfo,gettranspotationFile());
+		  PropertyInfo propInfo1=new PropertyInfo();
+		  propInfo1.name="arg1";
+		  propInfo1.type=PropertyInfo.STRING_CLASS;
 
-		  SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11); 
+		  request.addProperty(propInfo1,getVehicleName());
+		  
+		  PropertyInfo propInfo2=new PropertyInfo();
+		  propInfo2.name="arg2";
+		  propInfo2.type=PropertyInfo.STRING_CLASS;  
+		  
+		  request.addProperty(propInfo2,getVehicleManuYear());
+		  
+		  PropertyInfo propInfo3=new PropertyInfo();
+		  propInfo3.name="arg3";
+		  propInfo3.type=PropertyInfo.STRING_CLASS; 	  
+		  request.addProperty(propInfo3,gettranspotationFile());
+		  
+
+		 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11); 
 
 		 envelope.setOutputSoapObject(request);
 		 
